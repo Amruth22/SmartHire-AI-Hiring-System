@@ -171,26 +171,43 @@ The app will be available at `http://localhost:8503`
 
 ## Workflow Execution
 
-### 5-Stage Pipeline
+### Complete AI-Powered Pipeline
 
-```
-Stage 1: Resume Parsing (Gemini AI feature extraction)
-    ↓
-Stage 2: Experience Level Prediction (Gemini AI classification)
-    ↓
-Stage 3: Resume Scoring (Gemini AI quality assessment)
-    ↓
-Stage 4: Job Fit Analysis (Gemini AI compatibility)
-    ↓
-Stage 5: Question Generation (Gemini AI personalization)
-    ↓
-[USER ANSWERS QUESTIONS]
-    ↓
-Stage 6: Answer Evaluation (SBERT + Gemini AI)
+```mermaid
+graph TD
+    START([📄 Resume Upload & Job Selection]) --> PARSE["<b>Stage 1: Resume Parsing</b><br/>Gemini AI extracts:<br/>- Name, email, phone<br/>- Skills, experience, education<br/>- Projects, certifications"]
+
+    PARSE --> EXP["<b>Stage 2: Experience Prediction</b><br/>Gemini AI classifies:<br/>- Junior 0-2 years<br/>- Mid-Level 2-5 years<br/>- Senior 5+ years"]
+
+    EXP --> SCORE["<b>Stage 3: Resume Scoring</b><br/>Gemini AI evaluates:<br/>- Experience depth<br/>- Skills breadth<br/>- Projects quality<br/>- Score: 0-10"]
+
+    SCORE --> FIT["<b>Stage 4: Job Fit Analysis</b><br/>Gemini AI analyzes:<br/>- Skill matching<br/>- Experience match<br/>- Fit score 0-10<br/>- Skill gaps identified"]
+
+    FIT --> QUESTIONS["<b>Stage 5: Question Generation</b><br/>Gemini AI creates:<br/>- 5-8 personalized questions<br/>- Mix of concept & code<br/>- Reference answers included"]
+
+    QUESTIONS --> UI["📱 Display Questions<br/>Candidate Answers"]
+
+    UI --> EVAL["<b>Stage 6: Answer Evaluation</b><br/>SBERT + Gemini AI:<br/>- Concept Q: Semantic similarity<br/>- Code Q: AI evaluation<br/>- Per-question scores<br/>- Composite final score"]
+
+    EVAL --> RESULTS["📊 Final Results<br/>Comprehensive Report<br/>Generated"]
+
+    RESULTS --> END([✅ Complete - 30-45 seconds])
+
+    style START fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000
+    style PARSE fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
+    style EXP fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
+    style SCORE fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
+    style FIT fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
+    style QUESTIONS fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
+    style UI fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    style EVAL fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
+    style RESULTS fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px,color:#000
+    style END fill:#c8e6c9,stroke:#1b5e20,stroke-width:2px,color:#000
 ```
 
-**Performance**: 30-45 seconds for complete analysis
-**Engine**: Gemini 2.0 Flash (AI-powered, no ML models)
+**Performance**: 30-45 seconds for complete candidate analysis
+**Technology**: Gemini 2.0 Flash (all 6 stages use AI)
+**Parallelization**: Stages can run in parallel (configurable workers)
 
 ---
 
@@ -382,22 +399,87 @@ This project demonstrates:
 
 ---
 
+## Testing
+
+### Run Unit Tests
+
+```bash
+# Run all 10 core tests
+python tests.py
+
+# Or with unittest
+python -m unittest tests.py -v
+```
+
+### Test Coverage (10 Core Tests)
+
+1. **test_1_api_keys_loaded** - Verify Gemini API keys from .env
+2. **test_2_config_validation** - Validate configuration
+3. **test_3_job_descriptions_exists** - CSV file integrity
+4. **test_4_state_creation** - CandidateState initialization
+5. **test_5_state_cloning** - Parallel execution support
+6. **test_6_ai_analyzer** - AIAnalyzer initialization
+7. **test_7_semantic_analyzer** - Semantic similarity calculation
+8. **test_8_resume_parser_agent** - Resume parsing functionality
+9. **test_9_experience_predictor_agent** - Experience prediction
+10. **test_10_workflow_creation** - Workflow builder
+
+**Result**: All 10 tests PASS ✅
+
+---
+
+## System Requirements
+
+### Minimum Requirements
+
+- **Python**: 3.8 or higher
+- **RAM**: 4GB minimum (8GB recommended for SBERT)
+- **Disk**: 2GB free space (for models and logs)
+- **Internet**: Required (Gemini API calls)
+
+### API Requirements
+
+- **4 Gemini API Keys**: Required for production (can use same key 4x)
+- **Rate Limits**: Monitor Google Cloud console
+
+### Dependencies
+
+- See `requirements.txt` for complete list
+- Total install size: ~2GB (includes PyTorch for SBERT)
+
+---
+
 ## Status
 
 **PRODUCTION READY - v2.1.0**
 
-- ✅ All agents implemented (6 agents)
-- ✅ All analyzers implemented (AIAnalyzer + SemanticAnalyzer)
-- ✅ All nodes implemented (6 nodes)
-- ✅ Workflow builders complete
-- ✅ HiringGraph class complete (with parallel execution)
-- ✅ State management complete (@dataclass with clone/merge)
-- ✅ Configuration management complete
-- ✅ Utils complete (Gemini client, logging, PDF extraction)
-- ✅ GenAI-powered system (all predictions use Gemini 2.0 Flash)
-- ✅ Cleaned up ML files (ml_analyzer, models, train_models.py removed)
-- ✅ Updated dependencies (pinned versions for compatibility)
+### Fully Implemented Components
+
+- ✅ 6 specialized agents + BaseAgent coordinator
+- ✅ 2 analyzers (AIAnalyzer + SemanticAnalyzer)
+- ✅ 6 nodes for orchestration
+- ✅ 2 workflow builders (hiring + evaluation)
+- ✅ HiringGraph orchestration engine (with parallel execution)
+- ✅ CandidateState @dataclass (clone & merge methods)
+- ✅ ConfigManager singleton (with .env support)
+- ✅ Gemini AI wrapper + PDF extraction utilities
+- ✅ Hierarchical logging system
+- ✅ Streamlit web UI (3 tabs)
+
+### Cleanup & Optimization
+
+- ✅ ML files removed (ml_analyzer.py, models/, train_models.py)
+- ✅ GenAI-only system (all predictions use Gemini 2.0 Flash)
+- ✅ Dependencies pinned to compatible versions
 - ✅ Fast startup (8-10 seconds import time)
+- ✅ 10 core unit tests (100% pass rate)
+
+### Performance Metrics
+
+- **Import Time**: 8-10 seconds
+- **Pipeline Time**: 30-45 seconds per candidate
+- **Concurrent Support**: 3 parallel workers (configurable)
+- **Test Execution**: ~60 seconds for all 10 tests
 
 ---
 

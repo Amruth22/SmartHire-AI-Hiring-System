@@ -6,6 +6,153 @@ SmartHire follows the **Client Format Pattern** with strict separation of concer
 
 ---
 
+## Complete Workflow Pipeline (Mermaid Diagram)
+
+```mermaid
+graph TD
+    %% Entry Point
+    START([📄 Resume Upload & Job Selection]) --> TRIGGER[🚀 Workflow Trigger]
+
+    %% Initial Setup
+    TRIGGER --> |"Create Initial State<br/>Load Configuration"| INIT[📋 Initialize CandidateState]
+
+    %% Parallel Stages Setup
+    INIT --> PARALLEL{"🎯 Launch Analysis Stages"}
+
+    %% Parallel Agent Execution (All agents coordinate via orchestrator)
+    PARALLEL --> |"Stage 1"| PARSE[📝 Resume Parser Agent]
+    PARALLEL --> |"Stage 2-3 (Parallel)"| EXP[🎓 Experience Predictor Agent]
+    PARALLEL --> |"Stage 2-3 (Parallel)"| SCORE[⭐ Resume Scorer Agent]
+    PARALLEL --> |"Stage 4"| FIT[🎯 Job Fit Analyzer Agent]
+    PARALLEL --> |"Stage 5"| GEN[❓ Question Generator Agent]
+
+    %% Stage Results
+    PARSE --> |"Extract Features<br/>Name, Skills, Education<br/>Experience, Projects"| PARSE_RESULT[📝 Parsed Resume Data<br/>Features: Extracted<br/>Quality: Valid/Invalid<br/>Retry Count: 0-1]
+
+    EXP --> |"Classify Experience<br/>Analyze Years & Skills<br/>Gemini AI Assessment"| EXP_RESULT[🎓 Experience Prediction<br/>Level: Junior/Mid/Senior<br/>Confidence: 0.0-1.0<br/>Reasoning: Provided]
+
+    SCORE --> |"Evaluate Resume Quality<br/>Analyze Depth & Breadth<br/>Gemini AI Scoring"| SCORE_RESULT[⭐ Resume Score Results<br/>Score: 0-10<br/>Breakdown: Provided<br/>Feedback: Generated]
+
+    FIT --> |"Analyze Job Compatibility<br/>Match Skills & Experience<br/>Gemini AI Analysis"| FIT_RESULT[🎯 Job Fit Results<br/>Fit Level: Excellent/Good/Moderate/Poor<br/>Score: 0-10<br/>Gap Analysis: Completed]
+
+    GEN --> |"Generate Interview Questions<br/>Personalize to Candidate<br/>5-8 Adaptive Questions"| GEN_RESULT[❓ Generated Questions<br/>Concept Questions: 3-4<br/>Code Questions: 2-3<br/>Reference Answers: Included]
+
+    %% Agent Coordination
+    PARSE_RESULT --> COORDINATOR[🔄 Agent Coordinator<br/>State Merger]
+    EXP_RESULT --> COORDINATOR
+    SCORE_RESULT --> COORDINATOR
+    FIT_RESULT --> COORDINATOR
+    GEN_RESULT --> COORDINATOR
+
+    %% Coordination Logic
+    COORDINATOR --> |"All Stages Complete?"| CHECK{"✅ Completion Check<br/>All Data Gathered?"}
+    CHECK --> |"No - Wait"| WAIT[⏳ Wait for<br/>Remaining Stages]
+    WAIT --> CHECK
+    CHECK --> |"Yes - Proceed"| MERGE[🔀 Smart State Merge<br/>Combine All Results]
+
+    %% State Merging
+    MERGE --> |"Clone & Merge<br/>Resolve Conflicts<br/>Aggregate Scores"| MERGED_STATE[📊 Complete Candidate State<br/>All Analysis: Complete<br/>Scores: Aggregated<br/>Questions: Ready]
+
+    %% Display to UI
+    MERGED_STATE --> UI[📱 Display Questions to Candidate<br/>Streamlit UI]
+
+    %% Candidate Answers
+    UI --> |"Candidate Answers<br/>All 5-8 Questions"| ANSWERS[💬 Collect Answers<br/>Type: Text/Code<br/>Count: 5-8 answers]
+
+    %% Answer Evaluation Stage
+    ANSWERS --> EVAL_TRIGGER[🔄 Start Evaluation Workflow]
+
+    EVAL_TRIGGER --> |"For Each Answer"| EVAL_AGENT[🔍 Answer Evaluator Agent]
+
+    EVAL_AGENT --> |"Concept Q: SBERT Similarity<br/>Code Q: Gemini AI Evaluation<br/>Score Each Answer"| EVAL_RESULT[🔍 Evaluation Results<br/>Per-Question Scores: 0-10<br/>Feedback: Generated<br/>Confidence: Provided]
+
+    %% Final Scoring
+    EVAL_RESULT --> |"Calculate Composite Score<br/>Average All Answers<br/>Generate Overall Feedback"| FINAL_SCORE[📊 Final Composite Score<br/>Score: 0-10<br/>Interpretation: Provided<br/>Strengths & Weaknesses: Listed]
+
+    %% Decision Making
+    FINAL_SCORE --> DECISION{"⚖️ Result Assessment<br/>Multi-Factor Evaluation"}
+
+    %% Multi-Dimensional Decision Matrix
+    DECISION --> |"Score < 5.0<br/>Poor Performance"| RESULT_POOR[🔴 Poor Fit<br/>Not Recommended<br/>Feedback: Constructive]
+    DECISION --> |"5.0 ≤ Score < 7.0<br/>Moderate Performance"| RESULT_MOD[🟡 Moderate Fit<br/>Consider with Review<br/>Feedback: Detailed]
+    DECISION --> |"7.0 ≤ Score < 9.0<br/>Good Performance"| RESULT_GOOD[🟢 Good Fit<br/>Recommended<br/>Feedback: Positive]
+    DECISION --> |"Score ≥ 9.0<br/>Excellent Performance"| RESULT_EXCEL[🟢 Excellent Fit<br/>Highly Recommended<br/>Feedback: Excellent]
+
+    %% Reporting
+    RESULT_POOR --> REPORT[📄 Generate Final Report]
+    RESULT_MOD --> REPORT
+    RESULT_GOOD --> REPORT
+    RESULT_EXCEL --> REPORT
+
+    %% Email Notifications Throughout Workflow
+    PARSE_RESULT --> EMAIL1[📧 Resume Parsing Complete]
+    EXP_RESULT --> EMAIL2[📧 Experience Level Determined]
+    SCORE_RESULT --> EMAIL3[📧 Resume Score Calculated]
+    FIT_RESULT --> EMAIL4[📧 Job Fit Analyzed]
+    GEN_RESULT --> EMAIL5[📧 Questions Generated]
+    EVAL_RESULT --> EMAIL6[📧 Answers Evaluated]
+    FINAL_SCORE --> EMAIL7[📧 Final Score Calculated]
+
+    %% Final Report Generation
+    REPORT --> |"Aggregate All Results<br/>Include Metrics & Feedback<br/>Generate Recommendations"| FINAL_REPORT[📄 Comprehensive Report<br/>Candidate Summary<br/>Analysis Results<br/>Recommendation]
+
+    %% Final States
+    FINAL_REPORT --> END_POOR([🔴 CANDIDATE EVALUATED<br/>Poor Performance])
+    FINAL_REPORT --> END_MOD([🟡 CANDIDATE EVALUATED<br/>Moderate Performance])
+    FINAL_REPORT --> END_GOOD([🟢 CANDIDATE QUALIFIED<br/>Good Performance])
+    FINAL_REPORT --> END_EXCEL([🟢 CANDIDATE QUALIFIED<br/>Excellent Performance])
+
+    %% Error Handling
+    PARSE --> |"Error"| ERROR[❌ Error Handler]
+    EXP --> |"Error"| ERROR
+    SCORE --> |"Error"| ERROR
+    FIT --> |"Error"| ERROR
+    GEN --> |"Error"| ERROR
+    EVAL_AGENT --> |"Error"| ERROR
+    COORDINATOR --> |"Error"| ERROR
+    ERROR --> |"Log Error<br/>Apply Fallback<br/>Continue"| ERROR_HANDLE[⚠️ Error Recovery<br/>Fallback Activated]
+    ERROR_HANDLE --> MERGED_STATE
+
+    %% Retry Logic for Resume Parsing
+    PARSE --> |"Extraction Failed"| RETRY_PARSE[🔄 Retry Resume Parsing<br/>Max: 1 attempt]
+    RETRY_PARSE --> |"Retry < 1"| PARSE
+
+    %% Styling with Color Coding
+    classDef agentNode fill:#e1f5fe,stroke:#01579b,stroke-width:3px,color:#000000
+    classDef resultNode fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000000
+    classDef decisionNode fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000000
+    classDef excellentNode fill:#c8e6c9,stroke:#1b5e20,stroke-width:3px,color:#000000
+    classDef goodNode fill:#e8f5e8,stroke:#2e7d32,stroke-width:2px,color:#000000
+    classDef moderateNode fill:#ffe0b2,stroke:#e65100,stroke-width:2px,color:#000000
+    classDef poorNode fill:#ffcdd2,stroke:#c62828,stroke-width:2px,color:#000000
+    classDef errorNode fill:#fce4ec,stroke:#ad1457,stroke-width:2px,color:#000000
+    classDef emailNode fill:#fff9c4,stroke:#f57f17,stroke-width:1px,color:#000000
+    classDef defaultNode fill:#f5f5f5,stroke:#424242,stroke-width:2px,color:#000000
+
+    class PARSE,EXP,SCORE,FIT,GEN,EVAL_AGENT agentNode
+    class PARSE_RESULT,EXP_RESULT,SCORE_RESULT,FIT_RESULT,GEN_RESULT,EVAL_RESULT,FINAL_SCORE,FINAL_REPORT resultNode
+    class DECISION,CHECK decisionNode
+    class END_EXCEL,RESULT_EXCEL excellentNode
+    class END_GOOD,RESULT_GOOD goodNode
+    class END_MOD,RESULT_MOD moderateNode
+    class END_POOR,RESULT_POOR poorNode
+    class ERROR,ERROR_HANDLE errorNode
+    class EMAIL1,EMAIL2,EMAIL3,EMAIL4,EMAIL5,EMAIL6,EMAIL7 emailNode
+    class START,TRIGGER,INIT,PARALLEL,COORDINATOR,WAIT,MERGE,MERGED_STATE,UI,ANSWERS,EVAL_TRIGGER,REPORT defaultNode
+```
+
+### Workflow Characteristics
+
+- **Total Stages**: 6 (Resume Parsing + 5 Analysis Stages + Answer Evaluation)
+- **Parallel Execution**: Experience Predictor & Resume Scorer run simultaneously
+- **State Management**: Smart merging of results from parallel stages
+- **Error Handling**: Layer-by-layer fallbacks and retry logic
+- **Performance**: 30-45 seconds for complete pipeline
+- **Notifications**: Email updates at each stage completion
+- **Final Output**: Comprehensive report with recommendations
+
+---
+
 ## Architecture Layers
 
 ### Layer 1: Tool Layer (analyzers/)
