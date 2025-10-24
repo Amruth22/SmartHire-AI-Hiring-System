@@ -20,9 +20,9 @@ def build_hiring_workflow(max_workers: int = 3) -> HiringGraph:
     Build the main hiring workflow
     
     Stages:
-    1. Resume parsing (extract features)
-    2. Experience prediction (ML-based)
-    3. Resume scoring (ML-based)
+    1. Resume parsing (AI-powered)
+    2. Experience prediction (AI-powered)
+    3. Resume scoring (AI-powered)
     4. Job fit analysis (AI-powered)
     5. Question generation (AI-powered)
     
