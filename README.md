@@ -67,6 +67,7 @@ SmartHire-AI-Hiring-System/
 ├── state.py                        # CandidateState @dataclass
 ├── config.py                       # Configuration management
 ├── main.py                         # Streamlit application
+├── tests.py                        # 10 core unit tests
 ├── requirements.txt                # Dependencies (pinned versions)
 ├── .env                            # Configuration (with API keys)
 ├── .env.example                    # Configuration template
