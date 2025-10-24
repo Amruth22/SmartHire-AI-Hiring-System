@@ -432,4 +432,4 @@ with tab3:
 
 # Footer
 st.markdown("---")
-st.markdown("*Built with Multi-Agent Architecture | Powered by Gemini AI, ML Models, and SBERT*")
+st.markdown("*Built with Multi-Agent Architecture | Powered by Gemini AI (GenAI) and SBERT*")
