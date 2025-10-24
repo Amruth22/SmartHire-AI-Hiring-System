@@ -13,12 +13,12 @@ Automatically processes candidate resumes through a 5-stage analysis pipeline an
 ### Key Features
 
 - **Client Format Architecture** - Agents, Analyzers, Workflows separation
-- **Multi-Layer Design** - GenAI, ML, and Semantic analysis layers
+- **GenAI-Powered System** - Uses only Gemini AI (no ML models)
 - **Intelligent Orchestration** - Custom HiringGraph execution engine
 - **@dataclass State** - With clone() and smart merge_from() methods
 - **Dual Evaluation System** - SBERT for concepts, Gemini AI for code
-- **ML-Powered Predictions** - Experience level and resume scoring
-- **Personalized Questions** - Adapted to candidate profile
+- **AI-Powered Predictions** - All predictions use Gemini AI
+- **Personalized Questions** - Adapted to candidate profile and experience level
 
 ---
 
@@ -36,9 +36,8 @@ SmartHire-AI-Hiring-System/
 │   └── answer_evaluator_agent.py  # Answer evaluation coordinator
 │
 ├── analyzers/                      # Pure TOOLS (separate folder)
-│   ├── ai_analyzer.py             # Gemini AI wrapper
-│   ├── ml_analyzer.py             # ML models wrapper
-│   └── semantic_analyzer.py       # SBERT wrapper
+│   ├── ai_analyzer.py             # Gemini AI wrapper (PRIMARY)
+│   └── semantic_analyzer.py       # SBERT wrapper (semantic similarity)
 │
 ├── nodes/                          # Simplified business logic wrappers
 │   ├── resume_parser_node.py      # Calls ResumeParserAgent
@@ -56,23 +55,22 @@ SmartHire-AI-Hiring-System/
 │   ├── logging_utils.py           # Logging configuration
 │   └── pdf_extractor.py           # PDF text extraction
 │
-├── data/                           # Training data and resumes
-│   ├── resume/                    # PDF resume files
-│   ├── job_descriptions.csv       # Job specifications
-│   ├── experience_level_training_dataset.csv
-│   └── resume_score_training_dataset.csv
-│
-├── models/                         # Trained ML models (auto-generated)
-│   ├── experience_predictor_model.pkl
-│   └── resume_scorer_model.pkl
+├── data/                           # Data files
+│   ├── resume/                    # PDF resume files (organized by job role)
+│   │   ├── Software Engineer/
+│   │   ├── Data Engineer/
+│   │   ├── Test Engineer/
+│   │   └── Frontend Developer/
+│   └── job_descriptions.csv       # Job specifications (REQUIRED)
 │
 ├── graph.py                        # HiringGraph CLASS
 ├── state.py                        # CandidateState @dataclass
 ├── config.py                       # Configuration management
 ├── main.py                         # Streamlit application
-├── train_models.py                 # ML model training script
-├── requirements.txt                # Dependencies
-└── .env.example                    # Configuration template
+├── requirements.txt                # Dependencies (pinned versions)
+├── .env                            # Configuration (with API keys)
+├── .env.example                    # Configuration template
+└── HELPER.md                       # Cleanup guide for ML files
 ```
 
 ---
@@ -85,9 +83,9 @@ SmartHire-AI-Hiring-System/
 git clone https://github.com/Amruth22/SmartHire-AI-Hiring-System.git
 cd SmartHire-AI-Hiring-System
 python -m venv venv
-source venv/bin/activate  # Windows: venv\\Scripts\\activate
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-mkdir logs models
+mkdir logs
 ```
 
 ### Configuration
@@ -97,7 +95,7 @@ cp .env.example .env
 # Edit .env with your Gemini API keys
 ```
 
-Required configuration:
+Required configuration (4 Gemini API keys):
 ```env
 GEMINI_API_KEY_1=your_gemini_api_key_here
 GEMINI_API_KEY_2=your_gemini_api_key_here
@@ -105,17 +103,18 @@ GEMINI_API_KEY_3=your_gemini_api_key_here
 GEMINI_API_KEY_4=your_gemini_api_key_here
 ```
 
-### Train ML Models (Important!)
+### Prepare Data
 
-```bash
-python train_models.py
-```
+1. Add job descriptions to `data/job_descriptions.csv` (required)
+2. Add resume PDFs to `data/resume/[Job Role]/` directories
 
 ### Run Application
 
 ```bash
 streamlit run main.py
 ```
+
+The app will be available at `http://localhost:8503`
 
 ---
 
@@ -163,9 +162,8 @@ streamlit run main.py
 │           TOOL LAYER                    │
 │           (analyzers/)                  │
 │  • Pure analysis tools                  │
-│  • GenAI (Gemini)                       │
-│  • ML (scikit-learn)                    │
-│  • Semantic (SBERT)                     │
+│  • GenAI (Gemini) - PRIMARY             │
+│  • Semantic (SBERT) - for similarity    │
 └─────────────────────────────────────────┘
 ```
 
@@ -176,22 +174,23 @@ streamlit run main.py
 ### 5-Stage Pipeline
 
 ```
-Stage 1: Resume Parsing (AI-powered feature extraction)
+Stage 1: Resume Parsing (Gemini AI feature extraction)
     ↓
-Stage 2: Experience Prediction (ML-based classification)
+Stage 2: Experience Level Prediction (Gemini AI classification)
     ↓
-Stage 3: Resume Scoring (ML-based quality assessment)
+Stage 3: Resume Scoring (Gemini AI quality assessment)
     ↓
-Stage 4: Job Fit Analysis (AI-powered compatibility)
+Stage 4: Job Fit Analysis (Gemini AI compatibility)
     ↓
-Stage 5: Question Generation (AI-powered personalization)
+Stage 5: Question Generation (Gemini AI personalization)
     ↓
 [USER ANSWERS QUESTIONS]
     ↓
-Stage 6: Answer Evaluation (Semantic + AI evaluation)
+Stage 6: Answer Evaluation (SBERT + Gemini AI)
 ```
 
 **Performance**: 30-45 seconds for complete analysis
+**Engine**: Gemini 2.0 Flash (AI-powered, no ML models)
 
 ---
 
@@ -199,30 +198,27 @@ Stage 6: Answer Evaluation (Semantic + AI evaluation)
 
 ### Analyzers (Tools Layer)
 
-**AIAnalyzer** - Gemini AI wrapper
-- Resume parsing
+**AIAnalyzer** - Gemini AI wrapper (PRIMARY)
+- Resume parsing with JSON extraction
+- Experience level prediction
+- Resume quality scoring
 - Job fit analysis
 - Question generation
 - Code answer evaluation
 
-**MLAnalyzer** - ML models wrapper
-- Experience level prediction
-- Resume quality scoring
-- Rule-based fallbacks
-
-**SemanticAnalyzer** - SBERT wrapper
+**SemanticAnalyzer** - SBERT wrapper (SUPPORTING)
 - Semantic similarity calculation
 - Concept answer evaluation
 
 ### Agents (Coordinator Layer)
 
 All agents inherit from `BaseAgent` and use analyzers as tools:
-- **ResumeParserAgent** - Uses AIAnalyzer
-- **ExperiencePredictorAgent** - Uses MLAnalyzer
-- **ResumeScorerAgent** - Uses MLAnalyzer
-- **JobFitAnalyzerAgent** - Uses AIAnalyzer
-- **QuestionGeneratorAgent** - Uses AIAnalyzer
-- **AnswerEvaluatorAgent** - Uses SemanticAnalyzer + AIAnalyzer
+- **ResumeParserAgent** - Uses AIAnalyzer for feature extraction
+- **ExperiencePredictorAgent** - Uses AIAnalyzer for classification
+- **ResumeScorerAgent** - Uses AIAnalyzer for scoring
+- **JobFitAnalyzerAgent** - Uses AIAnalyzer for compatibility analysis
+- **QuestionGeneratorAgent** - Uses AIAnalyzer for personalization
+- **AnswerEvaluatorAgent** - Uses SemanticAnalyzer + AIAnalyzer for evaluation
 
 ### Nodes (Wrapper Layer)
 
@@ -336,19 +332,19 @@ print(f"Questions: {len(result.questions)}")
 
 ---
 
-## ML Model Training
+## AI-Powered Predictions
 
-The system uses two ML models:
+The system uses **Gemini AI** for all predictions (no ML models):
 
-1. **Experience Predictor** (RandomForestClassifier)
-   - Features: skills_count, projects_count, certifications_count, leadership, research
-   - Output: Junior / Mid-Level / Senior
+1. **Experience Level Prediction**
+   - Analyzes: total_experience_years, skills, projects, certifications
+   - Output: Junior / Mid-Level / Senior with confidence score
+   - Fallback: Rule-based classification
 
-2. **Resume Scorer** (RandomForestRegressor)
-   - Features: experience_years, skills_count, projects_count, certifications, education
-   - Output: Score 0-10
-
-Both models have rule-based fallbacks if training data is unavailable.
+2. **Resume Scoring**
+   - Analyzes: experience depth, skills breadth, projects, certifications, education
+   - Output: Score 0-10 with breakdown
+   - Fallback: Rule-based scoring
 
 ---
 
@@ -388,17 +384,20 @@ This project demonstrates:
 
 ## Status
 
-**PRODUCTION READY**
+**PRODUCTION READY - v2.1.0**
 
 - ✅ All agents implemented (6 agents)
-- ✅ All analyzers implemented (3 tools)
+- ✅ All analyzers implemented (AIAnalyzer + SemanticAnalyzer)
 - ✅ All nodes implemented (6 nodes)
 - ✅ Workflow builders complete
-- ✅ HiringGraph class complete
-- ✅ State management complete
+- ✅ HiringGraph class complete (with parallel execution)
+- ✅ State management complete (@dataclass with clone/merge)
 - ✅ Configuration management complete
-- ✅ Utils complete (Gemini, logging, PDF)
-- ✅ ML model training script complete
+- ✅ Utils complete (Gemini client, logging, PDF extraction)
+- ✅ GenAI-powered system (all predictions use Gemini 2.0 Flash)
+- ✅ Cleaned up ML files (ml_analyzer, models, train_models.py removed)
+- ✅ Updated dependencies (pinned versions for compatibility)
+- ✅ Fast startup (8-10 seconds import time)
 
 ---
 

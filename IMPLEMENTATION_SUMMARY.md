@@ -4,6 +4,9 @@
 
 This document summarizes the complete implementation of SmartHire following the client format architecture pattern as specified in the review comments.
 
+**Current Version**: v2.1.0 (GenAI-only, production-ready)
+**Status**: All ML files removed, system uses only Gemini AI
+
 ---
 
 ## Review Comments Addressed
@@ -42,18 +45,15 @@ class ResumeParserAgent(BaseAgent):
 
 ### 2. Extract GenAI layer, ML layer separately ✅
 
-**Implementation**:
+**Implementation** (Updated v2.1.0):
 - **GenAI Layer** (`analyzers/ai_analyzer.py`):
-  - Resume parsing
+  - Resume parsing (primary)
+  - Experience level prediction (AI-powered)
+  - Resume quality scoring (AI-powered)
   - Job fit analysis
   - Question generation
   - Code answer evaluation
-  
-- **ML Layer** (`analyzers/ml_analyzer.py`):
-  - Experience level prediction
-  - Resume quality scoring
-  - Rule-based fallbacks
-  
+
 - **Semantic Layer** (`analyzers/semantic_analyzer.py`):
   - Semantic similarity calculation
   - Concept answer evaluation
@@ -61,10 +61,14 @@ class ResumeParserAgent(BaseAgent):
 **Separation Achieved**:
 ```
 analyzers/
-├── ai_analyzer.py       # GenAI operations (Gemini)
-├── ml_analyzer.py       # ML operations (scikit-learn)
-└── semantic_analyzer.py # Semantic operations (SBERT)
+├── ai_analyzer.py       # GenAI operations (Gemini AI - PRIMARY)
+└── semantic_analyzer.py # Semantic operations (SBERT - SUPPORTING)
 ```
+
+**ML Layer Removed** (v2.1.0):
+- ❌ `analyzers/ml_analyzer.py` - Deleted (not used)
+- ❌ `models/` directory - Deleted (no ML models needed)
+- ❌ `train_models.py` - Deleted (system uses GenAI only)
 
 ---
 
@@ -125,11 +129,10 @@ SmartHire-AI-Hiring-System/
 │   ├── question_generator_agent.py
 │   └── answer_evaluator_agent.py
 │
-├── analyzers/                      # Pure tools (GenAI/ML/Semantic)
+├── analyzers/                      # Pure tools (GenAI/Semantic)
 │   ├── __init__.py
-│   ├── ai_analyzer.py             # Gemini AI wrapper
-│   ├── ml_analyzer.py             # ML models wrapper
-│   └── semantic_analyzer.py       # SBERT wrapper
+│   ├── ai_analyzer.py             # Gemini AI wrapper (PRIMARY)
+│   └── semantic_analyzer.py       # SBERT wrapper (SUPPORTING)
 │
 ├── nodes/                          # Simplified wrappers
 │   ├── __init__.py
@@ -150,27 +153,34 @@ SmartHire-AI-Hiring-System/
 │   ├── logging_utils.py
 │   └── pdf_extractor.py
 │
-├── data/                           # Training data and resumes
+├── data/                           # Data and resumes
 │   ├── README.md
-│   └── resume/
+│   ├── job_descriptions.csv       # Job specifications (REQUIRED)
+│   └── resume/                    # Organized by job role
 │
-├── models/                         # Trained ML models
 ├── logs/                           # Application logs
 ├── graph.py                        # HiringGraph class
 ├── state.py                        # CandidateState dataclass
 ├── config.py                       # ConfigManager
 ├── main.py                         # Streamlit application
-├── train_models.py                 # ML training script
-├── requirements.txt
-├── .env.example
+├── requirements.txt                # Dependencies (pinned versions)
+├── .env                            # Configuration with API keys
+├── .env.example                    # Configuration template
 ├── .gitignore
+├── HELPER.md                       # ML cleanup guide
 ├── README.md
 ├── ARCHITECTURE.md
 ├── QUICKSTART.md
+├── PROJECT_STATUS.md
+├── CHANGELOG.md
 └── IMPLEMENTATION_SUMMARY.md
 ```
 
-**Total Files Created**: 45+ files
+**Total Files**: 40+ files
+**Removed Files** (v2.1.0):
+- ❌ `analyzers/ml_analyzer.py`
+- ❌ `models/` directory (with all .pkl files)
+- ❌ `train_models.py`
 
 ---
 

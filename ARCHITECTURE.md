@@ -13,9 +13,8 @@ SmartHire follows the **Client Format Pattern** with strict separation of concer
 **Purpose**: Pure analysis tools with NO state management or orchestration logic
 
 **Components**:
-- `AIAnalyzer` - Gemini AI wrapper for GenAI operations
-- `MLAnalyzer` - ML models wrapper for predictions
-- `SemanticAnalyzer` - SBERT wrapper for semantic similarity
+- `AIAnalyzer` - Gemini AI wrapper (PRIMARY - all predictions)
+- `SemanticAnalyzer` - SBERT wrapper (SUPPORTING - similarity only)
 
 **Responsibilities**:
 - ✅ Perform AI/ML/Semantic operations

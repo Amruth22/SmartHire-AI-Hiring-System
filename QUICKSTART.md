@@ -63,41 +63,39 @@ GEMINI_API_KEY_4=your_actual_api_key_here
 ### 5. Create Required Directories
 
 ```bash
-mkdir -p logs models data/resume
+mkdir -p logs data/resume
 ```
 
-### 6. Prepare Training Data (Optional)
+### 6. Add Job Descriptions (REQUIRED)
 
-If you have training datasets, place them in the `data/` directory:
-- `data/experience_level_training_dataset.csv`
-- `data/resume_score_training_dataset.csv`
-- `data/job_descriptions.csv`
+Create or add `data/job_descriptions.csv` with this format:
 
-### 7. Train ML Models (Optional but Recommended)
-
-```bash
-python train_models.py
+```csv
+job_id,job_title,min_required_experience,max_required_experience,required_skills,preferred_skills,job_summary,difficulty_level
+J001,Software Engineer,1,3,"Python,Data Structures,Algorithms","Django,Flask,REST APIs","We are looking for a Software Engineer...",Medium
+J002,Data Engineer,2,5,"SQL,Python,ETL,Pipelines","Airflow,Spark,AWS","We are seeking a Data Engineer...",Hard
 ```
 
-If you don't have training data, the system will use rule-based fallbacks.
+### 7. Add Resume Files
 
-### 8. Add Resume Files
-
-Place PDF resumes in subdirectories under `data/resume/`:
+Place PDF resumes in subdirectories under `data/resume/`. Use the exact job titles from your CSV:
 
 ```bash
-mkdir -p data/resume/Software_Developer
-mkdir -p data/resume/Data_Engineer
+mkdir -p "data/resume/Software Engineer"
+mkdir -p "data/resume/Data Engineer"
+mkdir -p "data/resume/Test Engineer"
 # Add your PDF files to these directories
 ```
 
-### 9. Run the Application
+**Important**: Directory names must match job titles in `job_descriptions.csv`
+
+### 8. Run the Application
 
 ```bash
 streamlit run main.py
 ```
 
-The application will open in your browser at `http://localhost:8501`
+The application will open in your browser at `http://localhost:8503`
 
 ---
 
