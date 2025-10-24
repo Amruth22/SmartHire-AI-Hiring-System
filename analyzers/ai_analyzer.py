@@ -444,54 +444,6 @@ Assess correctness, efficiency, and code quality.
             {
                 "id": "Q3",
                 "type": "code",
-    
-    def _fallback_experience_level(self, resume_features: Dict[str, Any]) -> Dict[str, Any]:
-        """Fallback experience level prediction"""
-        years = resume_features.get('total_experience_years', 0)
-        skills_count = len(resume_features.get('skills', []))
-        projects_count = len(resume_features.get('projects', []))
-        
-        if years >= 5 or (skills_count >= 12 and projects_count >= 5):
-            level = "Senior"
-        elif years >= 2 or (skills_count >= 6 and projects_count >= 2):
-            level = "Mid-Level"
-        else:
-            level = "Junior"
-        
-        return {
-            "experience_level": level,
-            "confidence": 0.7,
-            "reasoning": "Rule-based fallback prediction"
-        }
-    
-    def _fallback_resume_score(self, resume_features: Dict[str, Any]) -> Dict[str, Any]:
-        """Fallback resume scoring"""
-        years = resume_features.get('total_experience_years', 0)
-        skills_count = len(resume_features.get('skills', []))
-        projects_count = len(resume_features.get('projects', []))
-        certs_count = len(resume_features.get('certifications', []))
-        
-        score = (
-            min(years * 0.5, 3.0) +
-            min(skills_count * 0.2, 2.5) +
-            min(projects_count * 0.3, 2.0) +
-            min(certs_count * 0.4, 1.5) +
-            1.0
-        )
-        score = min(10.0, max(0.0, score))
-        
-        return {
-            "resume_score": score,
-            "breakdown": {
-                "experience": min(10.0, years * 1.5),
-                "skills": min(10.0, skills_count * 0.8),
-                "projects": min(10.0, projects_count * 1.5),
-                "certifications": min(10.0, certs_count * 2.0),
-                "education": 5.0
-            },
-            "feedback": "Rule-based scoring applied"
-        }
-
                 "question": "Write a function to reverse a string without using built-in reverse methods.",
                 "reference_answer": "Should show basic programming skills and string manipulation"
             },
@@ -508,3 +460,50 @@ Assess correctness, efficiency, and code quality.
                 "reference_answer": "Should show understanding of arrays and iteration"
             }
         ]
+
+    def _fallback_experience_level(self, resume_features: Dict[str, Any]) -> Dict[str, Any]:
+        """Fallback experience level prediction"""
+        years = resume_features.get('total_experience_years', 0)
+        skills_count = len(resume_features.get('skills', []))
+        projects_count = len(resume_features.get('projects', []))
+
+        if years >= 5 or (skills_count >= 12 and projects_count >= 5):
+            level = "Senior"
+        elif years >= 2 or (skills_count >= 6 and projects_count >= 2):
+            level = "Mid-Level"
+        else:
+            level = "Junior"
+
+        return {
+            "experience_level": level,
+            "confidence": 0.7,
+            "reasoning": "Rule-based fallback prediction"
+        }
+
+    def _fallback_resume_score(self, resume_features: Dict[str, Any]) -> Dict[str, Any]:
+        """Fallback resume scoring"""
+        years = resume_features.get('total_experience_years', 0)
+        skills_count = len(resume_features.get('skills', []))
+        projects_count = len(resume_features.get('projects', []))
+        certs_count = len(resume_features.get('certifications', []))
+
+        score = (
+            min(years * 0.5, 3.0) +
+            min(skills_count * 0.2, 2.5) +
+            min(projects_count * 0.3, 2.0) +
+            min(certs_count * 0.4, 1.5) +
+            1.0
+        )
+        score = min(10.0, max(0.0, score))
+
+        return {
+            "resume_score": score,
+            "breakdown": {
+                "experience": min(10.0, years * 1.5),
+                "skills": min(10.0, skills_count * 0.8),
+                "projects": min(10.0, projects_count * 1.5),
+                "certifications": min(10.0, certs_count * 2.0),
+                "education": 5.0
+            },
+            "feedback": "Rule-based scoring applied"
+        }

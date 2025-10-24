@@ -1,2 +1,0 @@
-# This file ensures the models directory is tracked by git
-# Trained ML models will be saved here by train_models.py
