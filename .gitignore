@@ -32,10 +32,6 @@ env/
 *.swo
 *~
 
-# Environment variables
-.env
-.env.local
-
 # Logs
 logs/
 *.log
